@@ -1,7 +1,5 @@
 import re
-from pythainlp.tokenize import word_tokenize # ใช้ในการตัดคำ
-from pythainlp.corpus import common # ใช้ลบคำที่ไม่ใช้ออก
-
+from pythainlp.tokenize import THAI2FIT_TOKENIZER
 class MessageProcess:
     def __init__(self):
         self.thai_characters = self.__init_thai_characters()
@@ -12,17 +10,20 @@ class MessageProcess:
 
         return message_list_filtered
 
-    def process_thai_text(self, text):
-        text = text.lower().replace('\n', ' ').replace('\r', '').strip()
-        text = re.findall(r"[\u0E00-\u0E7Fa-zA-Z']+", text)
-        text = ''.join(text)
+    def count_words(self, data_frame):
+        word_list = set()
+        for text in data_frame:
+            
+            text = text.lower().replace('\n', ' ').replace('\r', '').strip()
+            text = re.findall(r"[\u0E00-\u0E7Fa-zA-Z']+", text)
+            text = ' '.join(text)
 
-        stop_words = common.thai_stopwords()
-        word_tokens = word_tokenize(text)
-        filtered_sentence = [w for w in word_tokens if not w in stop_words]
+            word_tokens = THAI2FIT_TOKENIZER.word_tokenize(text)
+            filtered_sentence = set([w for w in word_tokens])
 
-        text = ' '.join(filtered_sentence)
-        return text
+            word_list.update(filtered_sentence)
+
+        return len(word_list)
 
     def __init_thai_characters(self):
         # use constanst values to create map

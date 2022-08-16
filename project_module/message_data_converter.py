@@ -1,10 +1,12 @@
-import re
 import pandas as pd
 import json
 
 #file management
 from os import listdir
 from os.path import isfile, join
+
+#time stamp
+import time
 
 from .message_process import MessageProcess
 
@@ -20,6 +22,26 @@ class MessageDataConverter:
             self.import_json(path = f'{json_path}{f}')
             self.export_csv(path = f'{csv_path}{file_name}.csv')
             self.clear_message_list()
+
+    def merge_many_csv(self, src_path, des_path):
+        time_stamp = int(time.time())
+        file_list = [f for f in listdir(src_path) if isfile(join(src_path, f))]
+        i = 0
+        for f in file_list:
+            file_path = f'{src_path}{f}'
+            if(i==0):
+                merged = pd.read_csv(file_path)
+                i+=1
+                continue
+
+            csv1 = merged
+            csv2 = pd.read_csv(file_path)
+
+            merged = pd.concat([csv1, csv2], ignore_index= True)
+            
+        merged = merged[['message', 'category']]
+        merged.to_csv(f'{des_path}data{time_stamp}.csv', encoding='utf-8-sig')
+
 
     def import_json(self, path):
         json_file = open(path)
@@ -45,20 +67,10 @@ class MessageDataConverter:
     def export_csv(self, path):
         data = pd.DataFrame({'message': self.message_list})
 
-        # process thai text
-        data['message_parsed'] = data['message'].apply(self.message_process.process_thai_text)
-
         # assign default category
         data['category'] = 'C'
         
         data.to_csv(path, encoding='utf-8-sig')
-
-    def merge_csv(self, csv1_path, csv2_path, des_path):
-        csv1 = pd.read_csv(csv1_path)
-        csv2 = pd.read_csv(csv2_path)
-        merged = pd.concat([csv1, csv2], ignore_index= True)
-        
-        merged.to_csv(des_path, encoding='utf-8-sig')
 
     def clear_message_list(self):
         self.message_list = None
