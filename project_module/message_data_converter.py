@@ -75,5 +75,8 @@ class MessageDataConverter:
     def clear_message_list(self):
         self.message_list = None
 
+    def print_message_list(self):
+        return print(self.message_list)
+
 
    
