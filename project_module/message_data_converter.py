@@ -39,7 +39,7 @@ class MessageDataConverter:
 
             merged = pd.concat([csv1, csv2], ignore_index= True)
             
-        merged = merged[['message', 'category']]
+        merged = self.__clean_data__(merged)
         merged.to_csv(f'{des_path}data{time_stamp}.csv', encoding='utf-8-sig')
 
 
@@ -77,6 +77,17 @@ class MessageDataConverter:
 
     def print_message_list(self):
         return print(self.message_list)
+
+    def __clean_data__(self, data):
+        #filter na
+        data = data.dropna()
+        #sort by category
+        data = data.sort_values(by=['category'])
+        #reset index
+        data = data.reset_index()
+        data = data[['message', 'category']]
+
+        return data
 
 
    
