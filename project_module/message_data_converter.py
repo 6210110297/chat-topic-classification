@@ -72,6 +72,12 @@ class MessageDataConverter:
         
         data.to_csv(path, encoding='utf-8-sig')
 
+    def clean_csv(self, path):
+        data = pd.read_csv(path)
+        data = self.__clean_data__(data)
+
+        data.to_csv(path, encoding='utf-8-sig')
+
     def clear_message_list(self):
         self.message_list = None
 
