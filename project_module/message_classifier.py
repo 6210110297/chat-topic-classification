@@ -4,10 +4,11 @@ from pythainlp.word_vector import WordVector
 from joblib import load
 
 class MessageClassifier:
-    def __init__(self, error_sd= 0.07765331184188104, language='th'):
+    def __init__(self, auto_common= False, error_sd= 0.05, language='th'):
         self.model = None
         self.w2v_model = WordVector()
         self.classes = None
+        self.auto_common = auto_common
         self.error_sd = error_sd
         self.language = language
     
@@ -22,16 +23,26 @@ class MessageClassifier:
         result = self.classes[output[0]]
 
         predict_sd = self.predict_sd(text_vec)
-        print(predict_sd)
 
         max_confident = max((self.model.predict_proba(text_vec))[0])
-        # if(max_confident < self.common_offset):
-        #     return [f'{result}->C', (-1 * max_confident)]
+
+        if(self.auto_common and predict_sd[0] < self.error_sd):
+            return [f'{result}->C', max_confident]
 
         return [result, max_confident]
 
     def predict(self, X):
         output = self.model.predict(X)
+
+        predict_sd = self.predict_sd(X)
+
+        if(not self.auto_common):
+            return output
+
+        for i in range(len(predict_sd)):
+            sd = predict_sd[i]
+            if(sd < self.error_sd):                   
+                output[i] = 1
 
         return output
 
