@@ -1,6 +1,7 @@
 import json
 import numpy as np
 from pythainlp.word_vector import WordVector
+from sklearn.preprocessing import normalize
 from joblib import load
 
 class MessageClassifier:
@@ -18,6 +19,7 @@ class MessageClassifier:
 
     def classify(self, text_input = ''):
         text_vec = self.w2v_model.sentence_vectorizer(text_input)
+        text_vec = normalize(text_vec)
         output = self.model.predict(text_vec)
 
         result = self.classes[output[0]]
