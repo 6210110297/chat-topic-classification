@@ -1,6 +1,8 @@
 /data
 /exenv
+/venv
 /raw_data
 /test_data
 */__pycache__
 /models
+requirements_temp.txt

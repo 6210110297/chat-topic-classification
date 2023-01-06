@@ -1,50 +1,41 @@
 import json
 import numpy as np
 from pythainlp.word_vector import WordVector
-from sklearn.preprocessing import normalize
+from sklearn.preprocessing import StandardScaler, normalize
 from joblib import load
 
 class MessageClassifier:
-    def __init__(self, auto_common= False, error_sd= 0.05, language='th'):
+    def __init__(self, language='th'):
         self.model = None
         self.w2v_model = WordVector()
+        self.scaler = None
         self.classes = None
-        self.auto_common = auto_common
-        self.error_sd = error_sd
         self.language = language
     
-    def load_model(self, model_path, json_classes_path):
+    def load_model(self, model_path, json_classes_path, scaler_path):
         self.model = load(model_path) 
+        self.scaler = load(scaler_path)
         self.__init_json_classes(json_classes_path)
 
     def classify(self, text_input = ''):
         text_vec = self.w2v_model.sentence_vectorizer(text_input)
-        text_vec = normalize(text_vec)
-        output = self.model.predict(text_vec)
+        text_vec = self.scaler.transform(text_vec)
 
-        result = self.classes[output[0]]
-
-        predict_sd = self.predict_sd(text_vec)
-
-        max_confident = max((self.model.predict_proba(text_vec))[0])
-
-        if(self.auto_common and predict_sd[0] < self.error_sd):
-            return [f'{result}->C', max_confident]
+        predict_proba = (self.model.predict_proba(text_vec))[0]
+        max_confident = max(predict_proba)
+        output = [ p for p in predict_proba ].index(max_confident)
+        result = self.classes[output]
 
         return [result, max_confident]
 
     def predict(self, X):
-        output = self.model.predict(X)
+        predict_proba_list = (self.model.predict_proba(X))
+        max_confident_list = [ max(p) for p in predict_proba_list ]
+        output = []
+        for i in range(len(predict_proba_list)):
+            result = [ p for p in predict_proba_list[i] ].index(max_confident_list[i])
 
-        predict_sd = self.predict_sd(X)
-
-        if(not self.auto_common):
-            return output
-
-        for i in range(len(predict_sd)):
-            sd = predict_sd[i]
-            if(sd < self.error_sd):                   
-                output[i] = 1
+            output.append(result)
 
         return output
 
