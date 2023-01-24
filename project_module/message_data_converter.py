@@ -77,6 +77,32 @@ class MessageDataConverter:
         data = self.__clean_data__(data)
 
         data.to_csv(path, encoding='utf-8-sig')
+    
+    def prelabel_csv(self, path, prelabel_model, common_ratio= 0.5):
+        data = pd.read_csv(path)
+        
+        #prelabel
+        message_list = data['message']
+        label_list = []
+        confidence_list = []
+        for m in message_list:
+            result = prelabel_model.classify(m)
+            label = result[0]
+            confidence = result[1]
+
+            if(confidence < common_ratio):
+                label = 'C'
+
+            label_list.append(label)
+            confidence_list.append(confidence)
+
+        data['prelabel_category'] = label_list
+        data['confidence'] = confidence_list
+
+        file_name = path.split('.')[1]
+        dst_path = f'.{file_name}_prelabel.csv'
+
+        data.to_csv(dst_path, encoding='utf-8-sig')
 
     def clear_message_list(self):
         self.message_list = None

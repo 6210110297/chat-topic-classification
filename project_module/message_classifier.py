@@ -1,7 +1,6 @@
 import json
 import numpy as np
 from pythainlp.word_vector import WordVector
-from sklearn.preprocessing import StandardScaler, normalize
 from joblib import load
 
 class MessageClassifier:
