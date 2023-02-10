@@ -7,18 +7,15 @@ class MessageClassifier:
     def __init__(self, language='th'):
         self.model = None
         self.w2v_model = WordVector()
-        self.scaler = None
         self.classes = None
         self.language = language
     
-    def load_model(self, model_path, json_classes_path, scaler_path):
+    def load_model(self, model_path, json_classes_path):
         self.model = load(model_path) 
-        self.scaler = load(scaler_path)
         self.__init_json_classes(json_classes_path)
 
     def classify(self, text_input = ''):
         text_vec = self.w2v_model.sentence_vectorizer(text_input)
-        text_vec = self.scaler.transform(text_vec)
 
         predict_proba = (self.model.predict_proba(text_vec))[0]
         max_confident = max(predict_proba)
