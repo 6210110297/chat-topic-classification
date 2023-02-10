@@ -1,4 +1,5 @@
 import re
+import pandas as pd
 from pythainlp.tokenize import THAI2FIT_TOKENIZER
 class MessageProcess:
     def __init__(self):
@@ -24,6 +25,32 @@ class MessageProcess:
             word_list.update(filtered_sentence)
 
         return len(word_list)
+    
+    def prelabel_csv(self, path, prelabel_model, common_ratio= 0.5):
+        data = pd.read_csv(path)
+        
+        #prelabel
+        message_list = data['message']
+        label_list = []
+        confidence_list = []
+        for m in message_list:
+            result = prelabel_model.classify(m)
+            label = result[0]
+            confidence = result[1]
+
+            if(confidence < common_ratio):
+                label = 'C'
+
+            label_list.append(label)
+            confidence_list.append(confidence)
+
+        data['prelabel_category'] = label_list
+        data['confidence'] = confidence_list
+
+        file_name = path.split('.')[1]
+        dst_path = f'.{file_name}_prelabel.csv'
+
+        data.to_csv(dst_path, encoding='utf-8-sig')
 
     def __init_thai_characters(self):
         # use constanst values to create map
