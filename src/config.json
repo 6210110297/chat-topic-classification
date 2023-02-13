@@ -1,0 +1,7 @@
+{
+    "VISULIZE": true,
+    "DATA_PATH" : "./data/data1671694184.csv",
+    "DATA_PER_CATEGORY" : 600,
+    "CLASS_PATH" : "./classes.json",
+    "DST_DIR" : "./models"
+}
