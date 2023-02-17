@@ -1,5 +1,4 @@
 # chat-topic-classification
 
-## This repository contain experiment files 
-
-## All Summary module and code in folder # src
+ - This repository contain experiment and prototype files
+ - Summary module and codes are in **src**
