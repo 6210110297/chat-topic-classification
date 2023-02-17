@@ -9,31 +9,6 @@ import json
 
 from wordcloud import WordCloud
 from pythainlp.tokenize import THAI2FIT_TOKENIZER  # ใช้ในการตัดคำ
-from pythainlp.corpus import common  # ใช้ลบคำที่ไม่ใช้ออก
-
-# preprocessing
-from sklearn import preprocessing
-from sklearn.preprocessing import StandardScaler, normalize
-
-# Word2Vec
-from pythainlp.word_vector import WordVector
-
-# AI
-from sklearn.model_selection import train_test_split  # split data set
-# report train & test result
-from sklearn.metrics import accuracy_score, classification_report
-
-# AI Models
-from sklearn.ensemble import RandomForestClassifier
-from sklearn.neural_network import MLPClassifier
-
-# Hyperparameter Tunning
-from skopt import BayesSearchCV
-from skopt.space import Integer, Categorical, Real
-from skopt.plots import plot_objective, plot_histogram
-
-# Saving Intelligence
-from joblib import dump, load
 
 def clean_data(data):
     # sort
