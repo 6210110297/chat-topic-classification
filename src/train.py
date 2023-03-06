@@ -63,6 +63,7 @@ def train():
 
         # plot count graph
         plot_count_graph(data['category'])
+       
 
     # balancing data
     temp_list = balance_data(
@@ -78,10 +79,12 @@ def train():
     if (visulize):
         # plot count graph
         plot_count_graph(data['category'])
+       
 
         # plot message length
         data['message_length'] = data['message'].str.len()
-        sns.displot(data['message_length']).set_titles('message_length')
+        # sns.displot(data['message_length']).set_titles('message_length')
+       
 
         # word count data
         words_category = []
@@ -92,13 +95,14 @@ def train():
         w_count_data = pd.DataFrame(words_count)
         # display
         print(f'total words: {count_words(data)}')
-        sns.barplot(x= 'category', y='words_count', data=w_count_data)
+        # sns.barplot(x= 'category', y='words_count', data=w_count_data)
+       
 
         # word cloud check
-        check_wordcloud(data, 'Q')
-        check_wordcloud(data, 'S')
-        check_wordcloud(data, 'T')
-        check_wordcloud(data, 'A')
+        cat_string = 'QSTA' #character list of category
+        for c in cat_string:
+            check_wordcloud(data, c)
+           
 
     label_encoder = preprocessing.LabelEncoder()
     data['category_target'] = label_encoder.fit_transform(data['category'])
@@ -151,12 +155,15 @@ def train():
     print('Validation', accuracy_score(y_train, accuracy_predictions))
 
     model_predictions = model.predict(X_test)
+
     print('Accuracy', accuracy_score(y_test, model_predictions))
 
     print(classification_report(y_test, model_predictions))
 
     # save model
     time_stamp = int(time.time())
+    model_name = f'{dst_dir}/model{time_stamp}.joblib'
+    print(f'model saved : {model_name}')
     dump(model, f'{dst_dir}/model{time_stamp}.joblib')
 
 if __name__ == '__main__':
